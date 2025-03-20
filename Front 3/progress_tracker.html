@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Progress Tracker</title>
+    <style>
+        :root {
+            --primary: #2C3E50;
+            --primary-dark: #1A252F;
+            --primary-light: #5D6D7E;
+            --accent: #E74C3C;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --light: #F8F9F9;
+            --dark: #2C3E50;
+            --border-radius: 8px;
+            --transition: all 0.3s ease-in-out;
+        }
+
+        body {
+            font-family: 'Lora', serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light);
+            color: var(--dark);
+        }
+
+        header {
+            background-color: var(--primary);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 100px auto 0;
+            padding: 2rem;
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        h3 {
+            color: var(--primary);
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+            font-weight: bold;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .workout-form {
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        button:hover {
+            background-color: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .workout-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .workout-item {
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .workout-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .workout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .workout-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .workout-date {
+            color: var(--primary-light);
+            font-size: 0.9rem;
+        }
+
+        .workout-details {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .exercise-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .exercise-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .exercise-name {
+            font-weight: bold;
+        }
+
+        .exercise-stats {
+            color: var(--primary-light);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--primary-light);
+            font-size: 1rem;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--primary-light);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-edit {
+            background-color: var(--warning);
+        }
+
+        .btn-delete {
+            background-color: var(--accent);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                text-align: center;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .workout-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .workout-date {
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="physical_health.html" class="back-link">← Back to Physical Health</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Workout Progress Tracker</h2>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="dashboard">Dashboard</div>
+            <div class="tab" data-tab="log-workout">Log Workout</div>
+            <div class="tab" data-tab="history">Workout History</div>
+            <div class="tab" data-tab="goals">Goals</div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div class="tab-content active" id="dashboard">
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-workouts">0</div>
+                    <div class="stat-label">Total Workouts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="current-streak">0</div>
+                    <div class="stat-label">Current Streak (days)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="this-week">0</div>
+                    <div class="stat-label">Workouts This Week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="most-trained">-</div>
+                    <div class="stat-label">Most Trained Muscle</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Recent Activity</h3>
+                <div id="recent-workouts">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>No workouts logged yet. Start tracking your progress!</p>
+                        <button onclick="switchTab('log-workout')">Log Your First Workout</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3>Workout Frequency</h3>
+                <canvas id="workout-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Log Workout Tab -->
+        <div class="tab-content" id="log-workout">
+            <div class="card">
+                <h3>Log New Workout</h3>
+                <form id="workout-form" class="workout-form">
+                    <div class="form-group">
+                        <label for="workout-date">Date:</label>
+                        <input type="date" id="workout-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="workout-type">Workout Type:</label>
+                        <select id="workout-type" required>
+                            <option value="">Select Workout Type</option>
+                            <option value="fullBody">Full Body</option>
+                            <option value="upperBody">Upper Body</option>
+                            <option value="lowerBody">Lower Body</option>
+                            <option value="core">Core</option>
+                            <option value="back">Back</option>
+                            <option value="chest">Chest</option>
+                            <option value="shoulders">Shoulders</option>
+                            <option value="arms">Arms</option>
+                            <option value="legs">Legs</option>
+                            <option value="cardio">Cardio</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="workout-duration">Duration (minutes):</label>
+                        <input type="number" id="workout-duration" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="workout-intensity">Intensity:</label>
+                        <select id="workout-intensity" required>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="workout-notes">Notes:</label>
+                        <textarea id="workout-notes" rows="4"></textarea>
+                    </div>
+
+                    <h3>Exercises</h3>
+                    <div id="exercises-container">
+                        <div class="exercise-entry">
+                            <div class="form-group">
+                                <label>Exercise Name:</label>
+                                <input type="text" class="exercise-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Sets:</label>
+                                <input type="number" class="exercise-sets" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Reps:</label>
+                                <input type="number" class="exercise-reps" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Weight (kg, optional):</label>
+                                <input type="number" class="exercise-weight" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" id="add-exercise-btn">+ Add Another Exercise</button>
+                    <button type="submit" id="save-workout-btn">Save Workout</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div class="tab-content" id="history">
+            <div class="card">
+                <h3>Workout History</h3>
+                <div id="workout-history">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <p>No workout history yet. Start logging your workouts!</p>
+                        <button onclick="switchTab('log-workout')">Log Your First Workout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Goals Tab -->
+        <div class="tab-content" id="goals">
+            <div class="card">
+                <h3>Fitness Goals</h3>
+                <form id="goals-form" class="workout-form">
+                    <div class="form-group">
+                        <label for="weekly-goal">Weekly Workout Goal:</label>
+                        <input type="number" id="weekly-goal" min="1" max="7" value="3">
+                    </div>
+                    <div class="form-group">
+                        <label for="goal-description">Goal Description:</label>
+                        <textarea id="goal-description" rows="4" placeholder="Describe your fitness goals..."></textarea>
+                    </div>
+                    <button type="submit">Save Goals</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Current Goals</h3>
+                <div id="current-goals">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎯</div>
+                        <p>No goals set yet. Define your fitness goals to stay motivated!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Tab switching functionality
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        function switchTab(tabId) {
+            // Remove active class from all tabs and contents
+            tabs.forEach(tab => tab.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab and content
+            const selectedTab = document.querySelector(`.tab[data-tab="${tabId}"]`);
+            const selectedContent = document.getElementById(tabId);
+            
+            if (selectedTab && selectedContent) {
+                selectedTab.classList.add('active');
+                selectedContent.classList.add('active');
+            }
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchTab(tab.getAttribute('data-tab'));
+            });
+        });
+
+        // Workout data storage
+        let workouts = JSON.parse(localStorage.getItem('workouts')) || [];
+        let goals = JSON.parse(localStorage.getItem('goals')) || { weeklyGoal: 3, description: '' };
+
+        // Initialize workout chart
+        let workoutChart;
+
+        function initializeChart() {
+            const ctx = document.getElementById('workout-chart').getContext('2d');
+            
+            // Get last 7 days
+            const labels = [];
+            const data = [];
+            const today = new Date();
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const formattedDate = `${date.getMonth() + 1}/${date.getDate()}`;
+                labels.push(formattedDate);
+                
+                // Count workouts on this date
+                const count = workouts.filter(workout => {
+                    const workoutDate = new Date(workout.date);
+                    return workoutDate.getDate() === date.getDate() && 
+                           workoutDate.getMonth() === date.getMonth() &&
+                           workoutDate.getFullYear() === date.getFullYear();
+                }).length;
+                
+                data.push(count);
+            }
+            
+            workoutChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Workouts',
+                        data: data,
+                        backgroundColor: 'rgba(231, 76, 60, 0.7)',
+                        borderColor: 'rgba(231, 76, 60, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            stepSize: 1
+                        }
+                    }
+                }
+            });
+        }
+
+        // Add exercise button functionality
+        document.getElementById('add-exercise-btn').addEventListener('click', function() {
+            const container = document.getElementById('exercises-container');
+            const exerciseEntry = document.createElement('div');
+            exerciseEntry.className = 'exercise-entry';
+            exerciseEntry.innerHTML = `
+                <div class="form-group">
+                    <label>Exercise Name:</label>
+                    <input type="text" class="exercise-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Sets:</label>
+                    <input type="number" class="exercise-sets" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Reps:</label>
+                    <input type="number" class="exercise-reps" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Weight (kg, optional):</label>
+                    <input type="number" class="exercise-weight" min="0">
+                </div>
+                <button type="button" class="btn-delete btn-small remove-exercise">Remove</button>
+            `;
+            container.appendChild(exerciseEntry);
+            
+            // Add event listener to remove button
+            exerciseEntry.querySelector('.remove-exercise').addEventListener('click', function() {
+                container.removeChild(exerciseEntry);
+            });
+        });
+
+        // Save workout form submission
+        document.getElementById('workout-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const date = document.getElementById('workout-date').value;
+            const type = document.getElementById('workout-type').value;
+            const duration = document.getElementById('workout-duration').value;
+            const intensity = document.getElementById('workout-intensity').value;
+            const notes = document.getElementById('workout-notes').value;
+            
+            // Get exercises
+            const exerciseEntries = document.querySelectorAll('.exercise-entry');
+            const exercises = [];
+            
+            exerciseEntries.forEach(entry => {
+                exercises.push({
+                    name: entry.querySelector('.exercise-name').value,
+                    sets: entry.querySelector('.exercise-sets').value,
+                    reps: entry.querySelector('.exercise-reps').value,
+                    weight: entry.querySelector('.exercise-weight').value || 0
+                });
+            });
+            
+            // Create workout object
+            const workout = {
+                id: Date.now(),
+                date: date,
+                type: type,
+                duration: duration,
+                intensity: intensity,
+                notes: notes,
+                exercises: exercises
+            };
+            
+            // Add to workouts array
+            workouts.push(workout);
+            
+            // Save to localStorage
+            localStorage.setItem('workouts', JSON.stringify(workouts));
+            
+            // Reset form
+            this.reset();
+            document.getElementById('exercises-container').innerHTML = `
+                <div class="exercise-entry">
+                    <div class="form-group">
+                        <label>Exercise Name:</label>
+                        <input type="text" class="exercise-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Sets:</label>
+                        <input type="number" class="exercise-sets" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Reps:</label>
+                        <input type="number" class="exercise-reps" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Weight (kg, optional):</label>
+                        <input type="number" class="exercise-weight" min="0">
+                    </div>
+                </div>
+            `;
+            
+            // Update UI
+            updateUI();
+            
+            // Switch to dashboard
+            switchTab('dashboard');
+            
+            alert('Workout saved successfully!');
+        });
+
+        // Save goals form submission
+        document.getElementById('goals-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const weeklyGoal = document.getElementById('weekly-goal').value;
+            const description = document.getElementById('goal-description').value;
+            
+            // Update goals
+            goals = {
+                weeklyGoal: weeklyGoal,
+                description: description
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('goals', JSON.stringify(goals));
+            
+            // Update UI
+            updateGoalsUI();
+            
+            alert('Goals saved successfully!');
+        });
+
+        // Update UI with workout data
+        function updateUI() {
+            updateDashboard();
+            updateWorkoutHistory();
+            updateGoalsUI();
+            
+            // Update chart
+            if (workoutChart) {
+                workoutChart.destroy();
+            }
+            initializeChart();
+        }
+
+        // Update dashboard stats and recent workouts
+        function updateDashboard() {
+            // Update stats
+            document.getElementById('total-workouts').textContent = workouts.length;
+            
+            // Calculate current streak
+            const streak = calculateStreak();
+            document.getElementById('current-streak').textContent = streak;
+            
+            // Calculate workouts this week
+            const thisWeek = calculateWorkoutsThisWeek();
+            document.getElementById('this-week').textContent = thisWeek;
+            
+            // Find most trained muscle
+            const mostTrained = findMostTrainedMuscle();
+            document.getElementById('most-trained').textContent = mostTrained || '-';
+            
+            // Update recent workouts
+            const recentWorkoutsElement = document.getElementById('recent-workouts');
+            
+            if (workouts.length === 0) {
+                recentWorkoutsElement.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>No workouts logged yet. Start tracking your progress!</p>
+                        <button onclick="switchTab('log-workout')">Log Your First Workout</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort workouts by date (newest first)
+            const sortedWorkouts = [...workouts].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Take only the 3 most recent workouts
+            const recentWorkouts = sortedWorkouts.slice(0, 3);
+            
+            let html = '<ul class="workout-list">';
+            
+            recentWorkouts.forEach(workout => {
+                const formattedDate = new Date(workout.date).toLocaleDateString();
+                
+                html += `
+                    <li class="workout-item">
+                        <div class="workout-header">
+                            <div class="workout-title">${formatWorkoutType(workout.type)} Workout</div>
+                            <div class="workout-date">${formattedDate}</div>
+                        </div>
+                        <div>Duration: ${workout.duration} minutes | Intensity: ${capitalizeFirstLetter(workout.intensity)}</div>
+                        <div class="workout-details">
+                            <strong>Exercises:</strong>
+                            <ul class="exercise-list">
+                `;
+                
+                workout.exercises.forEach(exercise => {
+                    html += `
+                        <li class="exercise-item">
+                            <span class="exercise-name">${exercise.name}</span>
+                            <span class="exercise-stats">${exercise.sets} sets × ${exercise.reps} reps ${exercise.weight > 0 ? '@ ' + exercise.weight + 'kg' : ''}</span>
+                        </li>
+                    `;
+                });
+                
+                html += `
+                            </ul>
+                        </div>
+                    </li>
+                `;
+            });
+            
+            html += '</ul>';
+            recentWorkoutsElement.innerHTML = html;
+        }
+
+        // Update workout history
+        function updateWorkoutHistory() {
+            const historyElement = document.getElementById('workout-history');
+            
+            if (workouts.length === 0) {
+                historyElement.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <p>No workout history yet. Start logging your workouts!</p>
+                        <button onclick="switchTab('log-workout')">Log Your First Workout</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort workouts by date (newest first)
+            const sortedWorkouts = [...workouts].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            let html = '<ul class="workout-list">';
+            
+            sortedWorkouts.forEach(workout => {
+                const formattedDate = new Date(workout.date).toLocaleDateString();
+                
+                html += `
+                    <li class="workout-item">
+                        <div class="workout-header">
+                            <div class="workout-title">${formatWorkoutType(workout.type)} Workout</div>
+                            <div class="workout-date">${formattedDate}</div>
+                        </div>
+                        <div>Duration: ${workout.duration} minutes | Intensity: ${capitalizeFirstLetter(workout.intensity)}</div>
+                        ${workout.notes ? `<div><strong>Notes:</strong> ${workout.notes}</div>` : ''}
+                        <div class="workout-details">
+                            <strong>Exercises:</strong>
+                            <ul class="exercise-list">
+                `;
+                
+                workout.exercises.forEach(exercise => {
+                    html += `
+                        <li class="exercise-item">
+                            <span class="exercise-name">${exercise.name}</span>
+                            <span class="exercise-stats">${exercise.sets} sets × ${exercise.reps} reps ${exercise.weight > 0 ? '@ ' + exercise.weight + 'kg' : ''}</span>
+                        </li>
+                    `;
+                });
+                
+                html += `
+                            </ul>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn-edit btn-small" onclick="editWorkout(${workout.id})">Edit</button>
+                            <button class="btn-delete btn-small" onclick="deleteWorkout(${workout.id})">Delete</button>
+                        </div>
+                    </li>
+                `;
+            });
+            
+            html += '</ul>';
+            historyElement.innerHTML = html;
+        }
+
+        // Update goals UI
+        function updateGoalsUI() {
+            document.getElementById('weekly-goal').value = goals.weeklyGoal;
+            document.getElementById('goal-description').value = goals.description;
+            
+            const currentGoalsElement = document.getElementById('current-goals');
+            
+            if (!goals.description) {
+                currentGoalsElement.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎯</div>
+                        <p>No goals set yet. Define your fitness goals to stay motivated!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Calculate progress towards weekly goal
+            const thisWeek = calculateWorkoutsThisWeek();
+            const weeklyProgress = Math.min(thisWeek / goals.weeklyGoal, 1) * 100;
+            
+            currentGoalsElement.innerHTML = `
+                <div class="card">
+                    <h3>Weekly Workout Goal</h3>
+                    <p>Goal: ${goals.weeklyGoal} workouts per week</p>
+                    <p>Current progress: ${thisWeek}/${goals.weeklyGoal} workouts (${Math.round(weeklyProgress)}%)</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${weeklyProgress}%"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Goal Description</h3>
+                    <p>${goals.description}</p>
+                </div>
+            `;
+        }
+
+        // Helper functions
+        function calculateStreak() {
+            if (workouts.length === 0) return 0;
+            
+            // Sort workouts by date
+            const sortedDates = [...workouts].map(w => new Date(w.date)).sort((a, b) => b - a);
+            
+            // Remove duplicate dates
+            const uniqueDates = [];
+            sortedDates.forEach(date => {
+                const dateString = date.toDateString();
+                if (!uniqueDates.includes(dateString)) {
+                    uniqueDates.push(dateString);
+                }
+            });
+            
+            // Calculate streak
+            let streak = 0;
+            const today = new Date().toDateString();
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayString = yesterday.toDateString();
+            
+            // Check if worked out today or yesterday to start streak
+            if (uniqueDates.includes(today) || uniqueDates.includes(yesterdayString)) {
+                streak = 1;
+                
+                // Check consecutive days before today/yesterday
+                let checkDate = new Date(uniqueDates.includes(today) ? today : yesterdayString);
+                
+                while (true) {
+                    checkDate.setDate(checkDate.getDate() - 1);
+                    const checkDateString = checkDate.toDateString();
+                    
+                    if (uniqueDates.includes(checkDateString)) {
+                        streak++;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            
+            return streak;
+        }
+
+        function calculateWorkoutsThisWeek() {
+            const today = new Date();
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - today.getDay()); // Start of week (Sunday)
+            startOfWeek.setHours(0, 0, 0, 0);
+            
+            return workouts.filter(workout => {
+                const workoutDate = new Date(workout.date);
+                return workoutDate >= startOfWeek;
+            }).length;
+        }
+
+        function findMostTrainedMuscle() {
+            if (workouts.length === 0) return null;
+            
+            const muscleGroups = {};
+            
+            workouts.forEach(workout => {
+                if (!muscleGroups[workout.type]) {
+                    muscleGroups[workout.type] = 0;
+                }
+                muscleGroups[workout.type]++;
+            });
+            
+            let mostTrained = null;
+            let maxCount = 0;
+            
+            for (const muscle in muscleGroups) {
+                if (muscleGroups[muscle] > maxCount) {
+                    maxCount = muscleGroups[muscle];
+                    mostTrained = muscle;
+                }
+            }
+            
+            return formatWorkoutType(mostTrained);
+        }
+
+        function formatWorkoutType(type) {
+            switch (type) {
+                case 'fullBody': return 'Full Body';
+                case 'upperBody': return 'Upper Body';
+                case 'lowerBody': return 'Lower Body';
+                case 'core': return 'Core';
+                case 'back': return 'Back';
+                case 'chest': return 'Chest';
+                case 'shoulders': return 'Shoulders';
+                case 'arms': return 'Arms';
+                case 'legs': return 'Legs';
+                case 'cardio': return 'Cardio';
+                default: return capitalizeFirstLetter(type);
+            }
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        // Edit and delete workout functions
+        function editWorkout(id) {
+            const workout = workouts.find(w => w.id === id);
+            if (!workout) return;
+            
+            // Switch to log workout tab
+            switchTab('log-workout');
+            
+            // Fill form with workout data
+            document.getElementById('workout-date').value = workout.date;
+            document.getElementById('workout-type').value = workout.type;
+            document.getElementById('workout-duration').value = workout.duration;
+            document.getElementById('workout-intensity').value = workout.intensity;
+            document.getElementById('workout-notes').value = workout.notes;
+            
+            // Clear exercises container
+            const exercisesContainer = document.getElementById('exercises-container');
+            exercisesContainer.innerHTML = '';
+            
+            // Add exercises
+            workout.exercises.forEach(exercise => {
+                const exerciseEntry = document.createElement('div');
+                exerciseEntry.className = 'exercise-entry';
+                exerciseEntry.innerHTML = `
+                    <div class="form-group">
+                        <label>Exercise Name:</label>
+                        <input type="text" class="exercise-name" value="${exercise.name}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Sets:</label>
+                        <input type="number" class="exercise-sets" value="${exercise.sets}" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Reps:</label>
+                        <input type="number" class="exercise-reps" value="${exercise.reps}" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Weight (kg, optional):</label>
+                        <input type="number" class="exercise-weight" value="${exercise.weight}" min="0">
+                    </div>
+                    <button type="button" class="btn-delete btn-small remove-exercise">Remove</button>
+                `;
+                exercisesContainer.appendChild(exerciseEntry);
+                
+                // Add event listener to remove button
+                exerciseEntry.querySelector('.remove-exercise').addEventListener('click', function() {
+                    exercisesContainer.removeChild(exerciseEntry);
+                });
+            });
+            
+            // Change save button to update
+            const saveButton = document.getElementById('save-workout-btn');
+            saveButton.textContent = 'Update Workout';
+            
+            // Change form submission to update workout
+            const form = document.getElementById('workout-form');
+            
+            // Remove previous event listeners
+            const newForm = form.cloneNode(true);
+            form.parentNode.replaceChild(newForm, form);
+            
+            // Add new event listener
+            newForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const date = document.getElementById('workout-date').value;
+                const type = document.getElementById('workout-type').value;
+                const duration = document.getElementById('workout-duration').value;
+                const intensity = document.getElementById('workout-intensity').value;
+                const notes = document.getElementById('workout-notes').value;
+                
+                // Get exercises
+                const exerciseEntries = document.querySelectorAll('.exercise-entry');
+                const exercises = [];
+                
+                exerciseEntries.forEach(entry => {
+                    exercises.push({
+                        name: entry.querySelector('.exercise-name').value,
+                        sets: entry.querySelector('.exercise-sets').value,
+                        reps: entry.querySelector('.exercise-reps').value,
+                        weight: entry.querySelector('.exercise-weight').value || 0
+                    });
+                });
+                
+                // Update workout
+                const index = workouts.findIndex(w => w.id === id);
+                workouts[index] = {
+                    ...workouts[index],
+                    date: date,
+                    type: type,
+                    duration: duration,
+                    intensity: intensity,
+                    notes: notes,
+                    exercises: exercises
+                };
+                
+                // Save to localStorage
+                localStorage.setItem('workouts', JSON.stringify(workouts));
+                
+                // Reset form and button
+                this.reset();
+                document.getElementById('exercises-container').innerHTML = `
+                    <div class="exercise-entry">
+                        <div class="form-group">
+                            <label>Exercise Name:</label>
+                            <input type="text" class="exercise-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Sets:</label>
+                            <input type="number" class="exercise-sets" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Reps:</label>
+                            <input type="number" class="exercise-reps" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Weight (kg, optional):</label>
+                            <input type="number" class="exercise-weight" min="0">
+                        </div>
+                    </div>
+                `;
+                saveButton.textContent = 'Save Workout';
+                
+                // Update UI
+                updateUI();
+                
+                // Switch to dashboard
+                switchTab('dashboard');
+                
+                alert('Workout updated successfully!');
+                
+                // Reset form submission to save new workout
+                setupNewWorkoutForm();
+            });
+            
+            // Add event listener to add exercise button
+            document.getElementById('add-exercise-btn').addEventListener('click', function() {
+                const container = document.getElementById('exercises-container');
+                const exerciseEntry = document.createElement('div');
+                exerciseEntry.className = 'exercise-entry';
+                exerciseEntry.innerHTML = `
+                    <div class="form-group">
+                        <label>Exercise Name:</label>
+                        <input type="text" class="exercise-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Sets:</label>
+                        <input type="number" class="exercise-sets" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Reps:</label>
+                        <input type="number" class="exercise-reps" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Weight (kg, optional):</label>
+                        <input type="number" class="exercise-weight" min="0">
+                    </div>
+                    <button type="button" class="btn-delete btn-small remove-exercise">Remove</button>
+                `;
+                container.appendChild(exerciseEntry);
+                
+                // Add event listener to remove button
+                exerciseEntry.querySelector('.remove-exercise').addEventListener('click', function() {
+                    container.removeChild(exerciseEntry);
+                });
+            });
+        }
+
+        function deleteWorkout(id) {
+            if (confirm('Are you sure you want to delete this workout?')) {
+                workouts = workouts.filter(w => w.id !== id);
+                localStorage.setItem('workouts', JSON.stringify(workouts));
+                updateUI();
+            }
+        }
+
+        function setupNewWorkoutForm() {
+            const form = document.getElementById('workout-form');
+            
+            // Remove previous event listeners
+            const newForm = form.cloneNode(true);
+            form.parentNode.replaceChild(newForm, form);
+            
+            // Add new event listener
+            newForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const date = document.getElementById('workout-date').value;
+                const type = document.getElementById('workout-type').value;
+                const duration = document.getElementById('workout-duration').value;
+                const intensity = document.getElementById('workout-intensity').value;
+                const notes = document.getElementById('workout-notes').value;
+                
+                // Get exercises
+                const exerciseEntries = document.querySelectorAll('.exercise-entry');
+                const exercises = [];
+                
+                exerciseEntries.forEach(entry => {
+                    exercises.push({
+                        name: entry.querySelector('.exercise-name').value,
+                        sets: entry.querySelector('.exercise-sets').value,
+                        reps: entry.querySelector('.exercise-reps').value,
+                        weight: entry.querySelector('.exercise-weight').value || 0
+                    });
+                });
+                
+                // Create workout object
+                const workout = {
+                    id: Date.now(),
+                    date: date,
+                    type: type,
+                    duration: duration,
+                    intensity: intensity,
+                    notes: notes,
+                    exercises: exercises
+                };
+                
+                // Add to workouts array
+                workouts.push(workout);
+                
+                // Save to localStorage
+                localStorage.setItem('workouts', JSON.stringify(workouts));
+                
+                // Reset form
+                this.reset();
+                document.getElementById('exercises-container').innerHTML = `
+                    <div class="exercise-entry">
+                        <div class="form-group">
+                            <label>Exercise Name:</label>
+                            <input type="text" class="exercise-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Sets:</label>
+                            <input type="number" class="exercise-sets" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Reps:</label>
+                            <input type="number" class="exercise-reps" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Weight (kg, optional):</label>
+                            <input type="number" class="exercise-weight" min="0">
+                        </div>
+                    </div>
+                `;
+                
+                // Update UI
+                updateUI();
+                
+                // Switch to dashboard
+                switchTab('dashboard');
+                
+                alert('Workout saved successfully!');
+            });
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('workout-date').value = today;
+            
+            // Initialize UI
+            updateUI();
+            
+            // Setup form
+            setupNewWorkoutForm();
+        });
+    </script>
+</body>
+</html>
+

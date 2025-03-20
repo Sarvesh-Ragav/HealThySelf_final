@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Generator</title>
+    <style>
+        :root {
+            --primary: #2C3E50;
+            --primary-dark: #1A252F;
+            --primary-light: #5D6D7E;
+            --accent: #E74C3C;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --light: #F8F9F9;
+            --dark: #2C3E50;
+            --border-radius: 8px;
+            --transition: all 0.3s ease-in-out;
+        }
+
+        body {
+            font-family: 'Lora', serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--dark);
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 100px auto 2rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-item input {
+            width: auto;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            display: block;
+            margin: 1.5rem auto;
+            min-width: 200px;
+        }
+
+        button:hover {
+            background-color: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .exercise {
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .exercise h3 {
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        .exercise p {
+            margin-bottom: 1rem;
+            color: var(--primary-light);
+            line-height: 1.6;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+            margin-top: 1rem;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .track-progress {
+            display: block;
+            margin-top: 1rem;
+            text-align: center;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        .track-progress:hover {
+            color: var(--accent);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+            font-weight: bold;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="physical_health.html" class="back-link">← Back to Physical Health</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Personalized Workout Generator</h1>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="profile">Your Profile</div>
+            <div class="tab" data-tab="generator">Workout Generator</div>
+            <div class="tab" data-tab="results">Workout Results</div>
+        </div>
+        
+        <!-- Profile Tab -->
+        <div class="tab-content active" id="profile">
+            <div class="form-section">
+                <h2>Personal Information</h2>
+                <p>Tell us about yourself so we can create a safe and effective workout plan for you.</p>
+                
+                <form id="profile-form">
+                    <div class="form-group">
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" min="12" max="100" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="gender">Gender:</label>
+                        <select id="gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="activity-level">Activity Level:</label>
+                        <select id="activity-level" required>
+                            <option value="">Select Activity Level</option>
+                            <option value="beginner">Beginner (New to exercise)</option>
+                            <option value="intermediate">Intermediate (Exercise 1-3 times/week)</option>
+                            <option value="advanced">Advanced (Exercise 4+ times/week)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Do you have any health conditions? (Select all that apply)</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="condition-none" name="conditions" value="none">
+                                <label for="condition-none">None</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="condition-diabetes" name="conditions" value="diabetes">
+                                <label for="condition-diabetes">Diabetes</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="condition-hypertension" name="conditions" value="hypertension">
+                                <label for="condition-hypertension">High Blood Pressure</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="condition-heart" name="conditions" value="heart">
+                                <label for="condition-heart">Heart Condition</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="condition-cholesterol" name="conditions" value="cholesterol">
+                                <label for="condition-cholesterol">High Cholesterol</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="condition-arthritis" name="conditions" value="arthritis">
+                                <label for="condition-arthritis">Arthritis</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Do you have any physical limitations or disabilities?</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="disability-none" name="disabilities" value="none">
+                                <label for="disability-none">None</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="disability-back" name="disabilities" value="back">
+                                <label for="disability-back">Back Pain/Injury</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="disability-knee" name="disabilities" value="knee">
+                                <label for="disability-knee">Knee Pain/Injury</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="disability-shoulder" name="disabilities" value="shoulder">
+                                <label for="disability-shoulder">Shoulder Pain/Injury</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="disability-mobility" name="disabilities" value="mobility">
+                                <label for="disability-mobility">Limited Mobility</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="additional-info">Additional Information:</label>
+                        <textarea id="additional-info" rows="3" placeholder="Any other information that might be relevant for your workout plan..."></textarea>
+                    </div>
+                    
+                    <button type="submit">Save Profile</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Generator Tab -->
+        <div class="tab-content" id="generator">
+            <div class="form-section">
+                <h2>Generate Your Workout</h2>
+                
+                <div id="profile-warning" class="alert alert-warning" style="display: none;">
+                    Please complete your profile first before generating a workout.
+                </div>
+                
+                <div id="health-warning" class="alert alert-warning" style="display: none;">
+                    Based on your health information, we recommend consulting with a healthcare professional before starting any new exercise program.
+                </div>
+                
+                <form id="workout-form">
+                    <div class="form-group">
+                        <label for="muscle-group">Select Muscle Group:</label>
+                        <select id="muscle-group" required>
+                            <option value="fullBody">Full Body</option>
+                            <option value="upperBody">Upper Body</option>
+                            <option value="lowerBody">Lower Body</option>
+                            <option value="core">Core</option>
+                            <option value="back">Back</option>
+                            <option value="chest">Chest</option>
+                            <option value="shoulders">Shoulders</option>
+                            <option value="arms">Arms</option>
+                            <option value="legs">Legs</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="workout-duration">Workout Duration:</label>
+                        <select id="workout-duration" required>
+                            <option value="short">Short (15-20 minutes)</option>
+                            <option value="medium" selected>Medium (30-40 minutes)</option>
+                            <option value="long">Long (45-60 minutes)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="equipment">Available Equipment:</label>
+                        <select id="equipment" required>
+                            <option value="none">None (Bodyweight Only)</option>
+                            <option value="minimal">Minimal (Resistance Bands, Light Weights)</option>
+                            <option value="moderate">Moderate (Dumbbells, Kettlebells)</option>
+                            <option value="full">Full Gym Access</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit">Generate Workout</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Results Tab -->
+        <div class="tab-content" id="results">
+            <div id="workout-result"></div>
+            
+            <a href="progress_tracker.html" class="track-progress" id="track-progress" style="display: none;">
+                Track Your Progress →
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Define workout exercises by muscle group, level, and equipment
+        const workoutDatabase = {
+            fullBody: {
+                beginner: {
+                    none: [
+                        { 
+                            name: "Jumping Jacks", 
+                            description: "A great warm-up exercise that gets your heart pumping.", 
+                            video: "https://www.youtube.com/embed/c4DAnQ6DtF8",
+                            sets: 2,
+                            reps: "30 seconds"
+                        },
+                        { 
+                            name: "Bodyweight Squats", 
+                            description: "A fundamental lower-body exercise that strengthens your legs and glutes.", 
+                            video: "https://www.youtube.com/embed/YaXPRqUwItQ",
+                            sets: 2,
+                            reps: "10-12"
+                        },
+                        { 
+                            name: "Modified Push-ups (on knees)", 
+                            description: "A modified version of push-ups that's easier for beginners.", 
+                            video: "https://www.youtube.com/embed/MO10KOoQx5E",
+                            sets: 2,
+                            reps: "8-10"
+                        },
+                        { 
+                            name: "Glute Bridges", 
+                            description: "An exercise that targets your glutes and hamstrings.", 
+                            video: "https://www.youtube.com/embed/GkzJkyPK1Bk",
+                            sets: 2,
+                            reps: "10-12"
+                        }
+                    ],
+                    minimal: [
+                        { 
+                            name: "Resistance Band Squats", 
+                            description: "Squats with added resistance to strengthen your legs.", 
+                            video: "https://www.youtube.com/embed/UXxUpXbgMTU",
+                            sets: 2,
+                            reps: "10-12"
+                        },
+                        { 
+                            name: "Resistance Band Rows", 
+                            description: "A back exercise using resistance bands.", 
+                            video: "https://www.youtube.com/embed/xQkXi-pLmm8",
+                            sets: 2,
+                            reps: "10-12"
+                        },
+                        { 
+                            name: "Light Dumbbell Shoulder Press", 
+                            description: "A shoulder exercise using light weights.", 
+                            video: "https://www.youtube.com/embed/qEwKCR5JCog",
+                            sets: 2,
+                            reps: "8-10"
+                        },
+                        { 
+                            name: "Glute Bridges", 
+                            description: "An exercise that targets your glutes and hamstrings.", 
+                            video: "https://www.youtube.com/embed/GkzJkyPK1Bk",
+                            sets: 2,
+                            reps: "10-12"
+                        }
+                    ]
+                },
+                intermediate: {
+                    none: [
+                        { 
+                            name: "Mountain Climbers", 
+                            description: "A dynamic exercise that works your core, arms, and legs while raising your heart rate.", 
+                            video: "https://www.youtube.com/embed/nmwgirgXLYM",
+                            sets: 3,
+                            reps: "45 seconds"
+                        },
+                        { 
+                            name: "Push-ups", 
+                            description: "A bodyweight exercise that targets your chest, shoulders, and triceps.", 
+                            video: "https://www.youtube.com/embed/IODxDxX7oi4",
+                            sets: 3,
+                            reps: "10-15"
+                        },
+                        { 
+                            name: "Bodyweight Squats", 
+                            description: "A fundamental lower-body exercise that strengthens your legs and glutes.", 
+                            video: "https://www.youtube.com/embed/YaXPRqUwItQ",
+                            sets: 3,
+                            reps: "15-20"
+                        },
+                        { 
+                            name: "Plank", 
+                            description: "A core stabilization exercise that improves endurance.", 
+                            video: "https://www.youtube.com/embed/pSHjTRCQxIw",
+                            sets: 3,
+                            reps: "30-45 seconds"
+                        }
+                    ],
+                    minimal: [
+                        { 
+                            name: "Resistance Band Push-ups", 
+                            description: "Push-ups with added resistance for increased difficulty.", 
+                            video: "https://www.youtube.com/embed/RrRt5qTEBiw",
+                            sets: 3,
+                            reps: "12-15"
+                        },
+                        { 
+                            name: "Dumbbell Goblet Squats", 
+                            description: "Squats while holding a dumbbell for added resistance.", 
+                            video: "https://www.youtube.com/embed/MeIiIdhvXT4",
+                            sets: 3,
+                            reps: "12-15"
+                        },
+                        { 
+                            name: "Dumbbell Rows", 
+                            description: "A back exercise using dumbbells.", 
+                            video: "https://www.youtube.com/embed/roCP6wCXPqo",
+                            sets: 3,
+                            reps: "12-15 per side"
+                        },
+                        { 
+                            name: "Resistance Band Shoulder Press", 
+                            description: "A shoulder exercise using resistance bands.", 
+                            video: "https://www.youtube.com/embed/3hcQK8gQSYg",
+                            sets: 3,
+                            reps: "12-15"
+                        }
+                    ]
+                },
+                advanced: {
+                    none: [
+                        { 
+                            name: "Burpees", 
+                            description: "A full-body exercise combining a squat, push-up, and jump.", 
+                            video: "https://www.youtube.com/embed/TU8QYVW0gDU",
+                            sets: 4,
+                            reps: "15-20"
+                        },
+                        { 
+                            name: "Plyometric Push-ups", 
+                            description: "An explosive push-up variation where your hands leave the ground.", 
+                            video: "https://www.youtube.com/embed/Z0bRiVhnO8Q",
+                            sets: 4,
+                            reps: "10-12"
+                        },
+                        { 
+                            name: "Pistol Squats", 
+                            description: "A challenging single-leg squat that tests strength and balance.", 
+                            video: "https://www.youtube.com/embed/PZlLHZ4Venw",
+                            sets: 3,
+                            reps: "8-10 per leg"
+                        },
+                        { 
+                            name: "Plank to Push-up", 
+                            description: "A dynamic core exercise transitioning between plank and push-up positions.", 
+                            video: "https://www.youtube.com/embed/hGZmZxR_Hzo",
+                            sets: 3,
+                            reps: "10-12"
+                        }
+                    ],
+                    minimal: [
+                        { 
+                            name: "Weighted Burpees", 
+                            description: "Burpees while holding light dumbbells for added resistance.", 
+                            video: "https://www.youtube.com/embed/YBX0TJMQ2PM",
+                            sets: 4,
+                            reps: "12-15"
+                        },
+                        { 
+                            name: "Resistance Band Thrusters", 
+                            description: "A compound exercise combining a squat and overhead press.", 
+                            video: "https://www.youtube.com/embed/Yvk5Qhz80GQ",
+                            sets: 4,
+                            reps: "12-15"
+                        },
+                        { 
+                            name: "Single-Leg Romanian Deadlifts", 
+                            description: "A challenging single-leg exercise for hamstrings and balance.", 
+                            video: "https://www.youtube.com/embed/HtHxnWmMgzM",
+                            sets: 3,
+                            reps: "10-12 per leg"
+                        },
+                        { 
+                            name: "Renegade Rows", 
+                            description: "A challenging exercise combining a plank and row.", 
+                            video: "https://www.youtube.com/embed/PJpTBj4ilZw",
+                            sets: 3,
+                            reps: "10-12 per side"
+                        }
+                    ]
+                }
+            },
+            // Add similar structures for other muscle groups
+            upperBody: {
+                beginner: {
+                    none: [
+                        { 
+                            name: "Modified Push-ups (on knees)", 
+                            description: "A modified version of push-ups that's easier for beginners.", 
+                            video: "https://www.youtube.com/embed/MO10KOoQx5E",
+                            sets: 2,
+                            reps: "8-10"
+                        },
+                        { 
+                            name: "Wall Push-ups", 
+                            description: "An even easier push-up variation for beginners.", 
+                            video: "https://www.youtube.com/embed/EgU3CbtQTlw",
+                            sets: 2,
+                            reps: "10-12"
+                        },
+                        { 
+                            name: "Arm Circles", 
+                            description: "A simple shoulder mobility exercise.", 
+                            video: "https://www.youtube.com/embed/140RTNMciH8",
+                            sets: 2,
+                            reps: "30 seconds each direction"
+                        },
+                        { 
+                            name: "Doorway Chest Stretch", 
+                            description: "A stretch for your chest muscles.", 
+                            video: "https://www.youtube.com/embed/SV7l1sfEmO0",
+                            sets: 2,
+                            reps: "20-30 seconds"
+                        }
+                    ]
+                }
+            }
+        };
+
+        // Tab switching functionality
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        function switchTab(tabId) {
+            // Remove active class from all tabs and contents
+            tabs.forEach(tab => tab.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab and content
+            const selectedTab = document.querySelector(`.tab[data-tab="${tabId}"]`);
+            const selectedContent = document.getElementById(tabId);
+            
+            if (selectedTab && selectedContent) {
+                selectedTab.classList.add('active');
+                selectedContent.classList.add('active');
+            }
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchTab(tab.getAttribute('data-tab'));
+            });
+        });
+
+        // User profile data
+        let userProfile = JSON.parse(localStorage.getItem('userProfile')) || null;
+
+        // Profile form submission
+        document.getElementById('profile-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value;
+            const activityLevel = document.getElementById('activity-level').value;
+            
+            // Get health conditions
+            const conditions = [];
+            document.querySelectorAll('input[name="conditions"]:checked').forEach(checkbox => {
+                conditions.push(checkbox.value);
+            });
+            
+            // Get disabilities
+            const disabilities = [];
+            document.querySelectorAll('input[name="disabilities"]:checked').forEach(checkbox => {
+                disabilities.push(checkbox.value);
+            });
+            
+            // Additional info
+            const additionalInfo = document.getElementById('additional-info').value;
+            
+            // Create profile object
+            userProfile = {
+                age: age,
+                gender: gender,
+                activityLevel: activityLevel,
+                conditions: conditions,
+                disabilities: disabilities,
+                additionalInfo: additionalInfo
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('userProfile', JSON.stringify(userProfile));
+            
+            // Switch to generator tab
+            switchTab('generator');
+            
+            // Show health warnings if necessary
+            checkHealthWarnings();
+            
+            alert('Profile saved successfully!');
+        });
+
+        // Check for health warnings based on profile
+        function checkHealthWarnings() {
+            const healthWarning = document.getElementById('health-warning');
+            
+            if (!userProfile) {
+                document.getElementById('profile-warning').style.display = 'block';
+                return;
+            } else {
+                document.getElementById('profile-warning').style.display = 'none';
+            }
+            
+            // Check for health conditions that might require medical consultation
+            const seriousConditions = ['heart', 'hypertension', 'diabetes'];
+            const hasSerious = userProfile.conditions.some(condition => seriousConditions.includes(condition));
+            
+            // Check age (over 60 might need extra caution)
+            const isOlder = parseInt(userProfile.age) > 60;
+            
+            if (hasSerious || isOlder) {
+                healthWarning.style.display = 'block';
+            } else {
+                healthWarning.style.display = 'none';
+            }
+        }
+
+        // Generate workout form submission
+        document.getElementById('workout-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!userProfile) {
+                alert('Please complete your profile first!');
+                switchTab('profile');
+                return;
+            }
+            
+            // Get form values
+            const muscleGroup = document.getElementById('muscle-group').value;
+            const duration = document.getElementById('workout-duration').value;
+            const equipment = document.getElementById('equipment').value;
+            
+            // Generate workout based on user profile and selections
+            generateWorkout(muscleGroup, userProfile.activityLevel, equipment, duration);
+            
+            // Switch to results tab
+            switchTab('results');
+        });
+
+        // Generate workout function
+        function generateWorkout(muscleGroup, level, equipment, duration) {
+            const workoutResult = document.getElementById('workout-result');
+            const trackProgress = document.getElementById('track-progress');
+            
+            workoutResult.innerHTML = "";
+            
+            // Map activity level to workout level
+            let workoutLevel;
+            switch(level) {
+                case 'beginner':
+                    workoutLevel = 'beginner';
+                    break;
+                case 'intermediate':
+                    workoutLevel = 'intermediate';
+                    break;
+                case 'advanced':
+                    workoutLevel = 'advanced';
+                    break;
+                default:
+                    workoutLevel = 'beginner';
+            }
+            
+            // Map equipment selection to database equipment type
+            let equipmentType;
+            switch(equipment) {
+                case 'none':
+                    equipmentType = 'none';
+                    break;
+                case 'minimal':
+                case 'moderate':
+                case 'full':
+                    equipmentType = 'minimal'; // For simplicity, we're using minimal for all equipment types
+                    break;
+                default:
+                    equipmentType = 'none';
+            }
+            
+            // Check if we have exercises for this combination
+            if (workoutDatabase[muscleGroup] && 
+                workoutDatabase[muscleGroup][workoutLevel] && 
+                workoutDatabase[muscleGroup][workoutLevel][equipmentType]) {
+                
+                let exercises = workoutDatabase[muscleGroup][workoutLevel][equipmentType];
+                
+                // Adjust number of exercises based on duration
+                let numberOfExercises;
+                switch(duration) {
+                    case 'short':
+                        numberOfExercises = Math.min(3, exercises.length);
+                        break;
+                    case 'medium':
+                        numberOfExercises = Math.min(4, exercises.length);
+                        break;
+                    case 'long':
+                        numberOfExercises = exercises.length;
+                        break;
+                    default:
+                        numberOfExercises = Math.min(4, exercises.length);
+                }
+                
+                // Take only the needed number of exercises
+                exercises = exercises.slice(0, numberOfExercises);
+                
+                // Create workout header
+                let workoutHeader = `
+                    <div class="form-section">
+                        <h2>${formatMuscleGroup(muscleGroup)} Workout - ${formatLevel(workoutLevel)} Level</h2>
+                        <p>Complete each exercise for the specified sets and reps with proper form.</p>
+                `;
+                
+                // Add health adaptations if needed
+                if (userProfile.conditions.includes('hypertension')) {
+                    workoutHeader += `
+                        <div class="alert alert-info">
+                            <strong>Blood Pressure Adaptation:</strong> Take longer rest periods between sets and avoid holding your breath during exercises.
+                        </div>
+                    `;
+                }
+                
+                if (userProfile.disabilities.includes('knee')) {
+                    workoutHeader += `
+                        <div class="alert alert-info">
+                            <strong>Knee-Friendly Adaptation:</strong> Reduce range of motion in lower body exercises as needed and avoid deep squats.
+                        </div>
+                    `;
+                }
+                
+                workoutHeader += `</div>`;
+                workoutResult.innerHTML = workoutHeader;
+                
+                // Add exercises
+                exercises.forEach(exercise => {
+                    workoutResult.innerHTML += `
+                        <div class='exercise'>
+                            <h3>${exercise.name}</h3>
+                            <p>${exercise.description}</p>
+                            <p><strong>Sets:</strong> ${exercise.sets} | <strong>Reps:</strong> ${exercise.reps}</p>
+                            <div class="video-container">
+                                <iframe src='${exercise.video}' allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                // Show track progress link
+                trackProgress.style.display = "block";
+                
+                // Save generated workout to localStorage for progress tracking
+                const workout = {
+                    date: new Date().toISOString().split('T')[0],
+                    type: muscleGroup,
+                    level: workoutLevel,
+                    exercises: exercises.map(ex => ({
+                        name: ex.name,
+                        sets: ex.sets,
+                        reps: ex.reps
+                    }))
+                };
+                
+                // Store workout in localStorage
+                let savedWorkouts = JSON.parse(localStorage.getItem('workouts')) || [];
+                savedWorkouts.push(workout);
+                localStorage.setItem('workouts', JSON.stringify(savedWorkouts));
+            } else {
+                // Fallback if specific combination not found
+                workoutResult.innerHTML = `
+                    <div class="form-section">
+                        <h2>Workout Not Available</h2>
+                        <p>Sorry, we don't have a specific workout for this combination yet. Please try a different selection.</p>
+                    </div>
+                `;
+                trackProgress.style.display = "none";
+            }
+        }
+
+        // Helper functions
+        function formatMuscleGroup(type) {
+            switch (type) {
+                case 'fullBody': return 'Full Body';
+                case 'upperBody': return 'Upper Body';
+                case 'lowerBody': return 'Lower Body';
+                case 'core': return 'Core';
+                case 'back': return 'Back';
+                case 'chest': return 'Chest';
+                case 'shoulders': return 'Shoulders';
+                case 'arms': return 'Arms';
+                case 'legs': return 'Legs';
+                default: return type.charAt(0).toUpperCase() + type.slice(1);
+            }
+        }
+
+        function formatLevel(level) {
+            return level.charAt(0).toUpperCase() + level.slice(1);
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load user profile if exists
+            if (userProfile) {
+                document.getElementById('age').value = userProfile.age;
+                document.getElementById('gender').value = userProfile.gender;
+                document.getElementById('activity-level').value = userProfile.activityLevel;
+                document.getElementById('additional-info').value = userProfile.additionalInfo;
+                
+                // Check health conditions
+                userProfile.conditions.forEach(condition => {
+                    const checkbox = document.getElementById(`condition-${condition}`);
+                    if (checkbox) checkbox.checked = true;
+                });
+                
+                // Check disabilities
+                userProfile.disabilities.forEach(disability => {
+                    const checkbox = document.getElementById(`disability-${disability}`);
+                    if (checkbox) checkbox.checked = true;
+                });
+                
+                // Check for health warnings
+                checkHealthWarnings();
+            }
+            
+            // Handle "None" checkbox for conditions
+            document.getElementById('condition-none').addEventListener('change', function() {
+                if (this.checked) {
+                    document.querySelectorAll('input[name="conditions"]').forEach(checkbox => {
+                        if (checkbox.id !== 'condition-none') {
+                            checkbox.checked = false;
+                            checkbox.disabled = true;
+                        }
+                    });
+                } else {
+                    document.querySelectorAll('input[name="conditions"]').forEach(checkbox => {
+                        checkbox.disabled = false;
+                    });
+                }
+            });
+            
+            // Handle "None" checkbox for disabilities
+            document.getElementById('disability-none').addEventListener('change', function() {
+                if (this.checked) {
+                    document.querySelectorAll('input[name="disabilities"]').forEach(checkbox => {
+                        if (checkbox.id !== 'disability-none') {
+                            checkbox.checked = false;
+                            checkbox.disabled = true;
+                        }
+                    });
+                } else {
+                    document.querySelectorAll('input[name="disabilities"]').forEach(checkbox => {
+                        checkbox.disabled = false;
+                    });
+                }
+            });
+            
+            // Check if there are any saved workouts
+            const savedWorkouts = JSON.parse(localStorage.getItem('workouts')) || [];
+            if (savedWorkouts.length > 0) {
+                // Show track progress link if there are saved workouts
+                document.getElementById("track-progress").style.display = "block";
+            }
+        });
+    </script>
+</body>
+</html>
+

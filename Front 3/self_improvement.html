@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Wellness Challenge</title>
+    <style>
+        :root {
+            --primary: #2C3E50;
+            --primary-dark: #1A252F;
+            --primary-light: #5D6D7E;
+            --accent: #E74C3C;
+            --success: #27ae60;
+            --light: #F8F9F9;
+            --dark: #2C3E50;
+            --border-radius: 8px;
+            --transition: all 0.3s ease-in-out;
+        }
+
+        body {
+            font-family: 'Lora', serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light);
+            color: var(--dark);
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 100px auto 2rem;
+            padding: 2rem;
+        }
+
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .challenge-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .challenge-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            background: var(--light);
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+
+        .challenge-card.active {
+            border: 2px solid var(--accent);
+        }
+
+        .challenge-card h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .challenge-card p {
+            color: var(--primary-light);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-container {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            margin: 0.5rem;
+        }
+
+        .btn:hover {
+            background-color: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1001;
+        }
+
+        .celebration-content {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            animation: popIn 0.5s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent);
+            animation: confetti 3s ease-in-out infinite;
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .streak-counter {
+            text-align: center;
+            margin: 1rem 0;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .timer {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 1rem 0;
+            color: var(--primary);
+        }
+
+        .badges-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .badge {
+            text-align: center;
+            padding: 1rem;
+            background: #f0f0f0;
+            border-radius: var(--border-radius);
+            opacity: 0.5;
+            transition: var(--transition);
+        }
+
+        .badge.earned {
+            opacity: 1;
+            background: var(--light);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .badge-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="mental_health.html" class="back-link">← Back to Mental Health</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Daily Wellness Challenge</h1>
+        
+        <div class="streak-counter">
+            Current Streak: <span id="streak">0</span> days
+        </div>
+
+        <div class="badges-container">
+            <div class="badge" id="badge-beginner">
+                <div class="badge-icon">🌱</div>
+                <div>Beginner</div>
+            </div>
+            <div class="badge" id="badge-consistent">
+                <div class="badge-icon">⭐</div>
+                <div>Consistent</div>
+            </div>
+            <div class="badge" id="badge-warrior">
+                <div class="badge-icon">⚔️</div>
+                <div>Wellness Warrior</div>
+            </div>
+            <div class="badge" id="badge-master">
+                <div class="badge-icon">👑</div>
+                <div>Master</div>
+            </div>
+        </div>
+
+        <div class="challenge-container">
+            <div id="challenge-card" class="challenge-card">
+                <h2>Today's Challenge</h2>
+                <p id="challenge-description"></p>
+                <div class="timer" id="timer" style="display: none;">00:00</div>
+                <button class="btn" id="start-btn">Start Challenge</button>
+                <button class="btn" id="complete-btn" style="display: none;">Complete Challenge</button>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <h3>Daily Progress</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <p id="progress-text">0% Complete</p>
+        </div>
+
+        <button class="btn" id="new-challenge-btn">Get New Challenge</button>
+    </div>
+
+    <div class="celebration" id="celebration">
+        <div class="celebration-content">
+            <h2>🎉 Congratulations! 🎉</h2>
+            <p>You've completed today's challenge!</p>
+            <p>Keep up the great work!</p>
+            <button class="btn" onclick="closeCelebration()">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        const challenges = [
+            {
+                title: "Mindful Meditation",
+                description: "Take 5 minutes to practice mindful meditation. Focus on your breath and observe your thoughts without judgment.",
+                duration: 300, // 5 minutes in seconds
+                type: "timer"
+            },
+            {
+                title: "Gratitude Journal",
+                description: "Write down 3 things you're grateful for today. Reflect on why they make you feel thankful.",
+                type: "task"
+            },
+            {
+                title: "Digital Detox",
+                description: "Take a 15-minute break from all digital devices. Notice how it affects your mood and thoughts.",
+                duration: 900, // 15 minutes in seconds
+                type: "timer"
+            },
+            {
+                title: "Random Act of Kindness",
+                description: "Perform one random act of kindness today. It could be as simple as sending a supportive message to someone.",
+                type: "task"
+            },
+            {
+                title: "Nature Connection",
+                description: "Spend 10 minutes outside, paying attention to the natural elements around you.",
+                duration: 600, // 10 minutes in seconds
+                type: "timer"
+            },
+            {
+                title: "Positive Affirmations",
+                description: "Create and repeat three positive affirmations about yourself throughout the day.",
+                type: "task"
+            },
+            {
+                title: "Mindful Movement",
+                description: "Practice 5 minutes of gentle stretching or yoga, focusing on your breath and body sensations.",
+                duration: 300,
+                type: "timer"
+            }
+        ];
+
+        let currentChallenge;
+        let timer;
+        let streak = parseInt(localStorage.getItem('challengeStreak')) || 0;
+        let lastCompletedDate = localStorage.getItem('lastCompletedDate');
+        
+        // Update streak display
+        document.getElementById('streak').textContent = streak;
+
+        // Initialize badges
+        updateBadges();
+
+        function updateBadges() {
+            if (streak >= 1) {
+                document.getElementById('badge-beginner').classList.add('earned');
+            }
+            if (streak >= 7) {
+                document.getElementById('badge-consistent').classList.add('earned');
+            }
+            if (streak >= 30) {
+                document.getElementById('badge-warrior').classList.add('earned');
+            }
+            if (streak >= 100) {
+                document.getElementById('badge-master').classList.add('earned');
+            }
+        }
+
+        function getNewChallenge() {
+            currentChallenge = challenges[Math.floor(Math.random() * challenges.length)];
+            document.getElementById('challenge-card').querySelector('h2').textContent = currentChallenge.title;
+            document.getElementById('challenge-description').textContent = currentChallenge.description;
+            
+            const startBtn = document.getElementById('start-btn');
+            const completeBtn = document.getElementById('complete-btn');
+            const timerDisplay = document.getElementById('timer');
+            
+            startBtn.style.display = 'inline-block';
+            completeBtn.style.display = 'none';
+            timerDisplay.style.display = 'none';
+            
+            if (currentChallenge.type === 'timer') {
+                startBtn.textContent = 'Start Timer';
+            } else {
+                startBtn.textContent = 'Start Challenge';
+            }
+        }
+
+        function startChallenge() {
+            const startBtn = document.getElementById('start-btn');
+            const completeBtn = document.getElementById('complete-btn');
+            const timerDisplay = document.getElementById('timer');
+            
+            startBtn.style.display = 'none';
+            document.getElementById('challenge-card').classList.add('active');
+
+            if (currentChallenge.type === 'timer') {
+                let timeLeft = currentChallenge.duration;
+                timerDisplay.style.display = 'block';
+                
+                timer = setInterval(() => {
+                    timeLeft--;
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        completeChallenge();
+                    }
+                }, 1000);
+            } else {
+                completeBtn.style.display = 'inline-block';
+            }
+        }
+
+        function completeChallenge() {
+            const today = new Date().toDateString();
+            
+            if (lastCompletedDate !== today) {
+                streak++;
+                localStorage.setItem('challengeStreak', streak);
+                localStorage.setItem('lastCompletedDate', today);
+                document.getElementById('streak').textContent = streak;
+                updateBadges();
+            }
+
+            document.getElementById('progress-fill').style.width = '100%';
+            document.getElementById('progress-text').textContent = '100% Complete';
+            document.getElementById('challenge-card').classList.remove('active');
+            
+            // Show celebration
+            showCelebration();
+        }
+
+        function showCelebration() {
+            const celebration = document.getElementById('celebration');
+            celebration.style.display = 'flex';
+            
+            // Add confetti
+            for (let i = 0; i < 50; i++) {
+                createConfetti();
+            }
+        }
+
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.getElementById('celebration').appendChild(confetti);
+            
+            // Remove confetti after animation
+            setTimeout(() => confetti.remove(), 5000);
+        }
+
+        function closeCelebration() {
+            document.getElementById('celebration').style.display = 'none';
+            getNewChallenge();
+        }
+
+        // Event Listeners
+        document.getElementById('start-btn').addEventListener('click', startChallenge);
+        document.getElementById('complete-btn').addEventListener('click', completeChallenge);
+        document.getElementById('new-challenge-btn').addEventListener('click', getNewChallenge);
+
+        // Initialize first challenge
+        getNewChallenge();
+
+        // Check streak continuity
+        const today = new Date().toDateString();
+        if (lastCompletedDate) {
+            const lastDate = new Date(lastCompletedDate);
+            const daysSinceLastChallenge = Math.floor((new Date() - lastDate) / (1000 * 60 * 60 * 24));
+            
+            if (daysSinceLastChallenge > 1) {
+                streak = 0;
+                localStorage.setItem('challengeStreak', streak);
+                document.getElementById('streak').textContent = streak;
+            }
+        }
+    </script>
+</body>
+</html>
+

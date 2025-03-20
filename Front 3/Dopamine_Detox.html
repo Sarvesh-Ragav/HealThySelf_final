@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dopamine Detox with Pomodoro Timer</title>
+    <style>
+        :root {
+            --primary: #2C3E50;
+            --primary-dark: #1A252F;
+            --primary-light: #5D6D7E;
+            --accent: #E74C3C;
+            --light: #F8F9F9;
+            --dark: #2C3E50;
+            --border-radius: 8px;
+            --transition: all 0.3s ease-in-out;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Lora', serif;
+        }
+        
+        body {
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: url('https://images.unsplash.com/photo-1506126613408-eca07ce68773?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            transition: background-image 1s ease;
+        }
+
+        header {
+            background-color: var(--primary);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            margin-top: 60px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        p {
+            color: var(--primary-light);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            margin: 0.5rem;
+        }
+        
+        .btn:hover {
+            background-color: var(--accent);
+            transform: scale(1.05);
+        }
+        
+        input[type="number"] {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 1.5rem;
+        }
+        
+        #timer-display, #detox-time-display {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 1.5rem 0;
+            color: var(--primary);
+            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        #detox-info {
+            display: none;
+            padding: 2rem;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: var(--border-radius);
+            margin-top: 2rem;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .benefits {
+            margin-top: 2rem;
+            text-align: left;
+        }
+        
+        .benefits h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .benefits ul {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .benefits li {
+            margin-bottom: 0.5rem;
+            color: var(--primary-light);
+        }
+        
+        .music-controls {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            #timer-display, #detox-time-display {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="mental_health.html" class="back-link">← Back to Mental Health</a>
+        </nav>
+    </header>
+
+    <div class="main-content">
+        <div class="container">
+            <h1>Dopamine Detox</h1>
+            <p>Take control of your focus and productivity by reducing stimulation and resetting your brain's reward system.</p>
+            
+            <div class="section">
+                <h2>Select Detox Duration</h2>
+                <p>Choose how long you want to detox from digital distractions and stimulation.</p>
+                <input type="number" id="detox-time-input" placeholder="Enter time in minutes" min="1" required>
+                <button class="btn" id="start-detox-btn">Start Detox</button>
+                
+                <div id="detox-info">
+                    <h3>Detox In Progress...</h3>
+                    <p>Stay focused and avoid digital stimulation during this time.</p>
+                    <p id="detox-time-display">00:00</p>
+                    <div class="music-controls">
+                        <button class="btn" id="toggle-music-btn">Play Music</button>
+                        <div class="volume-control">
+                            <label for="volume">Volume:</label>
+                            <input type="range" id="volume" min="0" max="1" step="0.1" value="0.5">
+                        </div>
+                    </div>
+                    <button class="btn" id="stop-btn">Stop Detox</button>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Pomodoro Timer</h2>
+                <p>Use the Pomodoro technique to maintain focus during your detox.</p>
+                <p id="timer-display">25:00</p>
+                <button class="btn" id="start-btn">Start Pomodoro</button>
+                <button class="btn" id="reset-btn">Reset</button>
+            </div>
+            
+            <div class="benefits">
+                <h3>Benefits of Dopamine Detox</h3>
+                <ul>
+                    <li>Improved focus and concentration</li>
+                    <li>Reduced anxiety and stress</li>
+                    <li>Better sleep quality</li>
+                    <li>Enhanced productivity</li>
+                    <li>Increased mindfulness and present-moment awareness</li>
+                    <li>Reduced dependency on digital stimulation</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <audio id="background-music" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0c6ff1bab.mp3?filename=ambient-piano-amp-strings-10711.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        let detoxInterval, pomodoroInterval;
+        let detoxTime, pomodoroTime = 25 * 60;
+        const backgroundMusic = document.getElementById('background-music');
+        const volumeControl = document.getElementById('volume');
+        const toggleMusicBtn = document.getElementById('toggle-music-btn');
+        let isMusicPlaying = false;
+        
+        // Set initial volume
+        backgroundMusic.volume = volumeControl.value;
+        
+        // Volume control
+        volumeControl.addEventListener('input', () => {
+            backgroundMusic.volume = volumeControl.value;
+        });
+        
+        // Toggle music
+        toggleMusicBtn.addEventListener('click', () => {
+            if (isMusicPlaying) {
+                backgroundMusic.pause();
+                toggleMusicBtn.textContent = 'Play Music';
+                isMusicPlaying = false;
+            } else {
+                backgroundMusic.play();
+                toggleMusicBtn.textContent = 'Pause Music';
+                isMusicPlaying = true;
+            }
+        });
+        
+        document.getElementById('start-detox-btn').addEventListener('click', () => {
+            let timeInput = document.getElementById('detox-time-input').value;
+            if (timeInput && timeInput > 0) {
+                detoxTime = timeInput * 60;
+                document.getElementById('detox-info').style.display = 'block';
+                
+                // Change background image to a more calming one
+                document.body.style.backgroundImage = "url('https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')";
+                
+                detoxInterval = setInterval(() => {
+                    let minutes = Math.floor(detoxTime / 60);
+                    let seconds = detoxTime % 60;
+                    document.getElementById('detox-time-display').textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+                    if (detoxTime-- <= 0) {
+                        clearInterval(detoxInterval);
+                        alert("Detox Complete! Great job staying focused.");
+                        
+                        // Reset background image
+                        document.body.style.backgroundImage = "url('https://images.unsplash.com/photo-1506126613408-eca07ce68773?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')";
+                        
+                        // Stop music if playing
+                        if (isMusicPlaying) {
+                            backgroundMusic.pause();
+                            toggleMusicBtn.textContent = 'Play Music';
+                            isMusicPlaying = false;
+                        }
+                        
+                        document.getElementById('detox-info').style.display = 'none';
+                        document.getElementById('start-detox-btn').disabled = false;
+                    }
+                }, 1000);
+                document.getElementById('start-detox-btn').disabled = true;
+            } else {
+                alert("Please enter a valid time.");
+            }
+        });
+        
+        document.getElementById('stop-btn').addEventListener('click', () => {
+            clearInterval(detoxInterval);
+            document.getElementById('detox-info').style.display = 'none';
+            document.getElementById('start-detox-btn').disabled = false;
+            
+            // Reset background image
+            document.body.style.backgroundImage = "url('https://images.unsplash.com/photo-1506126613408-eca07ce68773?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')";
+            
+            // Stop music if playing
+            if (isMusicPlaying) {
+                backgroundMusic.pause();
+                toggleMusicBtn.textContent = 'Play Music';
+                isMusicPlaying = false;
+            }
+        });
+        
+        document.getElementById('start-btn').addEventListener('click', () => {
+            clearInterval(pomodoroInterval);
+            pomodoroInterval = setInterval(() => {
+                let minutes = Math.floor(pomodoroTime / 60);
+                let seconds = pomodoroTime % 60;
+                document.getElementById('timer-display').textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+                if (pomodoroTime-- <= 0) {
+                    clearInterval(pomodoroInterval);
+                    alert("Pomodoro session completed! Take a short break.");
+                    pomodoroTime = 25 * 60;
+                    document.getElementById('timer-display').textContent = '25:00';
+                }
+            }, 1000);
+        });
+        
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            clearInterval(pomodoroInterval);
+            pomodoroTime = 25 * 60;
+            document.getElementById('timer-display').textContent = '25:00';
+        });
+    </script>
+</body>
+</html>
+

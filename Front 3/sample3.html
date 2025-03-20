@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealThySelf - Your Complete Health Resource</title>
+    <style>
+        :root {
+            --primary: #1a1a1a;
+            --secondary: #2d2d2d;
+            --accent-green: #4CAF50;
+            --accent-purple: #9C27B0;
+            --text-light: #ffffff;
+            --text-dark: #1a1a1a;
+            --card-bg: #333333;
+            --transition: all 0.3s ease-in-out;
+        }
+
+        body {
+            background-color: var(--primary);
+            color: var(--text-light);
+            font-family: 'Segoe UI', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--secondary);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--accent-green), #2196F3);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: var(--transition);
+            border-radius: 4px;
+        }
+
+        .nav-links a:hover {
+            background-color: var(--accent-green);
+            color: var(--text-dark);
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                        url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1600');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            padding: 2rem;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin-bottom: 2rem;
+            color: #e0e0e0;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .health-button {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .physical-health {
+            background-color: var(--accent-green);
+            color: var(--text-dark);
+        }
+
+        .mental-health {
+            background-color: var(--accent-purple);
+            color: var(--text-light);
+        }
+
+        .health-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .about-section {
+            padding: 5rem 2rem;
+            background-color: var(--secondary);
+        }
+
+        .about-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-text {
+            animation: fadeInLeft 1s ease-out;
+        }
+
+        .about-image {
+            animation: fadeInRight 1s ease-out;
+            position: relative;
+        }
+
+        .about-image img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .feedback-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: var(--accent-green);
+            color: var(--text-dark);
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 1000;
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .feedback-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .features-section {
+            padding: 5rem 2rem;
+            background-color: var(--primary);
+        }
+
+        .features-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent-green);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        footer {
+            background-color: var(--secondary);
+            color: var(--text-light);
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .button-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">HealThySelf</div>
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#features">Features</a>
+                <a href="physical_health.html">Physical Health</a>
+                <a href="mental_health.html">Mental Health</a>
+            </div>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Transform Your Health Journey</h1>
+            <p>Discover a comprehensive approach to wellness that combines cutting-edge physical health tracking with innovative mental well-being support.</p>
+            <div class="button-container">
+                <button class="health-button physical-health" onclick="location.href='physical_health.html'">Physical Health</button>
+                <button class="health-button mental-health" onclick="location.href='mental_health.html'">Mental Health</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about-section">
+        <div class="about-content">
+            <div class="about-text">
+                <h2>About HealThySelf</h2>
+                <p>HealThySelf is your comprehensive wellness companion, designed to support both your physical and mental health journey. We believe in a holistic approach to health, combining scientific tracking tools with mindful wellness practices.</p>
+                <p>Our platform offers personalized health tracking, expert-guided workouts, nutrition planning, mental wellness exercises, and a supportive community to help you achieve your health goals.</p>
+            </div>
+            <div class="about-image">
+                <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800" alt="Wellness Journey">
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features-section">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Health Tracking</h3>
+                <p>Monitor your BMI, body fat percentage, and other vital health metrics with our advanced calculators.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏋️</div>
+                <h3>Workout Plans</h3>
+                <p>Access personalized workout routines designed to match your fitness level and goals.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧘</div>
+                <h3>Mental Wellness</h3>
+                <p>Practice mindfulness, meditation, and stress management with guided exercises.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🥗</div>
+                <h3>Nutrition Guide</h3>
+                <p>Get customized dietary recommendations based on your health goals and preferences.</p>
+            </div>
+        </div>
+    </section>
+
+    <button class="feedback-button" onclick="openFeedbackChat()">Give Feedback</button>
+
+    <footer>
+        <p>&copy; 2025 HealThySelf. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function openFeedbackChat() {
+            window.location.href = 'feedback.html';
+        }
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Animate features on scroll
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
+

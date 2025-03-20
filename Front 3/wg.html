@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Endurance Workout Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        h1 {
+            color: #1a73e8;
+            text-align: center;
+        }
+        
+        .generator-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        select, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #1557b0;
+        }
+        
+        .workout-plan {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #1a73e8;
+        }
+        
+        .workout-plan h3 {
+            margin-top: 0;
+            color: #1a73e8;
+        }
+        
+        .exercise {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .exercise:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Endurance Workout Generator</h1>
+    
+    <div class="generator-container">
+        <div class="form-group">
+            <label for="muscle-group">Target Muscle Group:</label>
+            <select id="muscle-group">
+                <option value="fullBody">Full Body</option>
+                <option value="upperBody">Upper Body</option>
+                <option value="lowerBody">Lower Body</option>
+                <option value="core">Core</option>
+                <option value="back">Back</option>
+                <option value="chest">Chest</option>
+                <option value="shoulders">Shoulders</option>
+                <option value="arms">Arms</option>
+                <option value="legs">Legs</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="fitness-level">Fitness Level:</label>
+            <select id="fitness-level">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="time">Workout Duration (minutes):</label>
+            <select id="time">
+                <option value="15">15 minutes</option>
+                <option value="30" selected>30 minutes</option>
+                <option value="45">45 minutes</option>
+                <option value="60">60 minutes</option>
+            </select>
+        </div>
+        
+        <button id="generate-btn">Generate Workout</button>
+        
+        <div id="workout-result" class="workout-plan" style="display: none;">
+            <h3>Your Endurance Workout Plan</h3>
+            <div id="workout-exercises"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Exercise database (simplified for brevity)
+        const exerciseDatabase = {
+            fullBody: {
+                beginner: [
+                    { name: "Jumping Jacks", duration: "45 seconds", rest: "15 seconds", description: "Stand with feet together, jump and spread feet shoulder-width apart while raising arms overhead." },
+                    { name: "Bodyweight Squats", duration: "45 seconds", rest: "15 seconds", description: "Stand with feet shoulder-width apart, lower your body as if sitting in a chair, then return to standing position." },
+                    { name: "Modified Push-ups", duration: "30 seconds", rest: "15 seconds", description: "Perform push-ups with knees on the ground to reduce resistance." },
+                    { name: "Walking Lunges", duration: "45 seconds", rest: "15 seconds", description: "Step forward with one leg, lowering your body until both knees form 90-degree angles, then rise and repeat with the other leg." },
+                    { name: "Plank", duration: "30 seconds", rest: "15 seconds", description: "Hold a push-up position with your weight on your forearms, keeping your body in a straight line." }
+                ],
+                intermediate: [
+                    { name: "Burpees", duration: "45 seconds", rest: "15 seconds", description: "From standing, drop into a squat position, kick feet back, do a push-up, return feet to squat position, and jump up." },
+                    { name: "Mountain Climbers", duration: "45 seconds", rest: "15 seconds", description: "In a push-up position, alternate bringing each knee toward your chest in a running motion." },
+                    { name: "Push-ups", duration: "40 seconds", rest: "20 seconds", description: "Standard push-ups with weight on hands and toes, lowering chest to the ground and pushing back up." },
+                    { name: "Squat Jumps", duration: "40 seconds", rest: "20 seconds", description: "Perform a squat, then explosively jump upward, landing softly back into squat position." },
+                    { name: "Bicycle Crunches", duration: "45 seconds", rest: "15 seconds", description: "Lie on your back, hands behind head, bringing opposite elbow to opposite knee in a cycling motion." }
+                ],
+                advanced: [
+                    { name: "Plyometric Burpees", duration: "50 seconds", rest: "10 seconds", description: "Standard burpees with an explosive push-up and higher jump at the end." },
+                    { name: "Tuck Jumps", duration: "45 seconds", rest: "15 seconds", description: "Jump as high as possible while bringing knees to chest mid-air." },
+                    { name: "Diamond Push-ups", duration: "40 seconds", rest: "20 seconds", description: "Push-ups with hands forming a diamond shape, targeting triceps more intensely." },
+                    { name: "Pistol Squats", duration: "40 seconds (20 per leg)", rest: "20 seconds", description: "Single-leg squat while extending the other leg forward, challenging balance and strength." },
+                    { name: "Turkish Get-ups (modified)", duration: "60 seconds", rest: "20 seconds", description: "Complex movement from lying down to standing while maintaining balance with one arm extended." }
+                ]
+            },
+            upperBody: {
+                beginner: [
+                    { name: "Wall Push-ups", duration: "40 seconds", rest: "20 seconds", description: "Push-ups performed against a wall to reduce resistance." },
+                    { name: "Arm Circles", duration: "30 seconds each direction", rest: "15 seconds", description: "Extend arms to sides and make circular motions, forward then backward." },
+                    { name: "Doorway Chest Stretch", duration: "30 seconds", rest: "10 seconds", description: "Stand in doorway with arms on door frame, lean forward to stretch chest muscles." },
+                    { name: "Seated Tricep Dips", duration: "30 seconds", rest: "15 seconds", description: "Using a chair, slide buttocks off edge and bend elbows to lower body, then push back up." }
+                ],
+                intermediate: [
+                    { name: "Standard Push-ups", duration: "40 seconds", rest: "20 seconds", description: "Standard push-ups with weight on hands and toes." },
+                    { name: "Tricep Dips", duration: "40 seconds", rest: "20 seconds", description: "Using parallel surfaces, lower body between them by bending elbows, then push back up." },
+                    { name: "Plank to Push-up", duration: "45 seconds", rest: "15 seconds", description: "Alternate between forearm plank and push-up position." },
+                    { name: "Pike Push-ups", duration: "40 seconds", rest: "20 seconds", description: "Push-ups with body in an inverted V position, targeting shoulders more." }
+                ],
+                advanced: [
+                    { name: "Diamond Push-ups", duration: "45 seconds", rest: "15 seconds", description: "Push-ups with hands forming a diamond shape, targeting triceps." },
+                    { name: "Decline Push-ups", duration: "40 seconds", rest: "20 seconds", description: "Push-ups with feet elevated on a surface, increasing difficulty." },
+                    { name: "Pseudo Planche Push-ups", duration: "40 seconds", rest: "20 seconds", description: "Push-ups with hands positioned closer to hips, fingers pointing backward." },
+                    { name: "Handstand Wall Walks", duration: "30 seconds", rest: "30 seconds", description: "Walk feet up wall to handstand position, then walk back down." }
+                ]
+            },
+            // More muscle groups would be defined here in the same format
+            lowerBody: {
+                beginner: [
+                    { name: "Bodyweight Squats", duration: "45 seconds", rest: "15 seconds", description: "Lower body as if sitting in an imaginary chair, then return to standing position." },
+                    { name: "Calf Raises", duration: "45 seconds", rest: "15 seconds", description: "Rise onto toes, then lower heels back to ground." },
+                    { name: "Glute Bridges", duration: "40 seconds", rest: "20 seconds", description: "Lie on back, feet flat on floor, lift hips toward ceiling." },
+                    { name: "Marching in Place", duration: "60 seconds", rest: "15 seconds", description: "Lift knees high while marching in place." }
+                ],
+                intermediate: [
+                    { name: "Walking Lunges", duration: "45 seconds", rest: "15 seconds", description: "Step forward into a lunge, then bring the other foot forward into another lunge." },
+                    { name: "Lateral Lunges", duration: "45 seconds", rest: "15 seconds", description: "Step to side and bend one knee while keeping other leg straight." },
+                    { name: "Jump Squats", duration: "40 seconds", rest: "20 seconds", description: "Perform a squat, then jump explosively, landing softly back into squat position." },
+                    { name: "Single-Leg Calf Raises", duration: "30 seconds per leg", rest: "15 seconds", description: "Perform calf raises while standing on one leg." }
+                ],
+                advanced: [
+                    { name: "Pistol Squats", duration: "40 seconds", rest: "20 seconds", description: "Single-leg squat while extending other leg forward." },
+                    { name: "Plyometric Lunges", duration: "45 seconds", rest: "15 seconds", description: "Lunge forward, then jump and switch legs in mid-air." },
+                    { name: "Box Jumps", duration: "40 seconds", rest: "20 seconds", description: "Jump onto elevated surface with both feet, then step or jump back down." },
+                    { name: "Bulgarian Split Squats", duration: "40 seconds per leg", rest: "20 seconds", description: "Rear foot elevated on bench, perform single-leg squats." }
+                ]
+            },
+            core: {
+                beginner: [
+                    { name: "Modified Plank", duration: "30 seconds", rest: "15 seconds", description: "Hold plank position with knees on ground." },
+                    { name: "Bent Knee Crunches", duration: "45 seconds", rest: "15 seconds", description: "Basic crunches with knees bent and feet flat on floor." },
+                    { name: "Seated Knee Lifts", duration: "45 seconds", rest: "15 seconds", description: "Sitting on edge of chair, lift knees toward chest." },
+                    { name: "Bird Dog", duration: "40 seconds", rest: "20 seconds", description: "On hands and knees, extend opposite arm and leg simultaneously." }
+                ],
+                intermediate: [
+                    { name: "Standard Plank", duration: "45 seconds", rest: "15 seconds", description: "Hold push-up position with weight on forearms." },
+                    { name: "Mountain Climbers", duration: "45 seconds", rest: "15 seconds", description: "In push-up position, alternate bringing knees to chest." },
+                    { name: "Russian Twists", duration: "40 seconds", rest: "20 seconds", description: "Seated, lean back slightly with feet off ground, twist torso side to side." },
+                    { name: "Bicycle Crunches", duration: "45 seconds", rest: "15 seconds", description: "Lying on back, alternate bringing elbow to opposite knee." }
+                ],
+                advanced: [
+                    { name: "Plank Jacks", duration: "45 seconds", rest: "15 seconds", description: "In plank position, jump feet out and in like jumping jacks." },
+                    { name: "V-ups", duration: "40 seconds", rest: "20 seconds", description: "Simultaneously lift legs and upper body to form V-shape." },
+                    { name: "Side Plank Rotations", duration: "40 seconds per side", rest: "20 seconds", description: "From side plank, rotate arm under body, then back up to sky." },
+                    { name: "Hollow Body Hold", duration: "45 seconds", rest: "15 seconds", description: "Lying on back, extend arms and legs while lifting shoulders and legs off ground." }
+                ]
+            }
+        };
+        
+        // Add the remaining muscle groups (back, chest, shoulders, arms, legs) in the same format
+        
+        // Define the workout generator function
+        function generateWorkout() {
+            const muscleGroup = document.getElementById('muscle-group').value;
+            const fitnessLevel = document.getElementById('fitness-level').value;
+            const workoutTime = parseInt(document.getElementById('time').value);
+            
+            // Get exercises for selected muscle group and fitness level
+            let exercises = [];
+            
+            if (exerciseDatabase[muscleGroup] && exerciseDatabase[muscleGroup][fitnessLevel]) {
+                exercises = exerciseDatabase[muscleGroup][fitnessLevel];
+            } else {
+                // Fallback to full body if the specific combination isn't available
+                exercises = exerciseDatabase.fullBody[fitnessLevel];
+            }
+            
+            // Adjust number of exercises based on workout time
+            let numberOfExercises = Math.floor(workoutTime / 5);
+            if (numberOfExercises > exercises.length) {
+                // If we need more exercises than available, we'll repeat the set
+                const originalExercises = [...exercises];
+                while (exercises.length < numberOfExercises) {
+                    exercises = exercises.concat(originalExercises);
+                }
+            }
+            
+            // Take only the needed number of exercises
+            exercises = exercises.slice(0, numberOfExercises);
+            
+            // Calculate rounds based on workout time
+            const timePerExercise = (exercises.length > 0) ? 
+                (workoutTime / exercises.length) : 0;
+            
+            // Display the workout
+            const workoutResult = document.getElementById('workout-result');
+            const workoutExercises = document.getElementById('workout-exercises');
+            
+            workoutExercises.innerHTML = '';
+            
+            // Add header info
+            let workoutInfo = `<p><strong>${capitalize(muscleGroup)} Endurance Workout - ${capitalize(fitnessLevel)} Level - ${workoutTime} minutes</strong></p>`;
+            workoutInfo += `<p>Complete each exercise for the specified duration with minimal rest between exercises. Repeat the circuit if time allows.</p>`;
+            
+            workoutExercises.innerHTML += workoutInfo;
+            
+            // Add exercises
+            exercises.forEach((exercise, index) => {
+                const exerciseElement = document.createElement('div');
+                exerciseElement.className = 'exercise';
+                exerciseElement.innerHTML = `
+                    <p><strong>${index + 1}. ${exercise.name}</strong></p>
+                    <p>Duration: ${exercise.duration} | Rest: ${exercise.rest}</p>
+                    <p>${exercise.description}</p>
+                `;
+                workoutExercises.appendChild(exerciseElement);
+            });
+            
+            // Add cooldown suggestion
+            const cooldown = document.createElement('div');
+            cooldown.className = 'exercise';
+            cooldown.innerHTML = `
+                <p><strong>Cooldown</strong></p>
+                <p>Duration: 3-5 minutes</p>
+                <p>Perform light stretching for all major muscle groups used in your workout.</p>
+            `;
+            workoutExercises.appendChild(cooldown);
+            
+            workoutResult.style.display = 'block';
+        }
+        
+        // Helper function to capitalize first letter
+        function capitalize(string) {
+            if (string === 'upperBody') return 'Upper Body';
+            if (string === 'lowerBody') return 'Lower Body';
+            if (string === 'fullBody') return 'Full Body';
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        
+        // Add event listener to the generate button
+        document.getElementById('generate-btn').addEventListener('click', generateWorkout);
+    </script>
+</body>
+</html>

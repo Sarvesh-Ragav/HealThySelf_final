@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mental Health Assistant</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    header h1 {
+      color: #4a6fa5;
+      margin-bottom: 10px;
+    }
+    
+    .privacy-toggle {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+    
+    .privacy-toggle label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+    
+    .privacy-toggle input {
+      margin-right: 8px;
+    }
+    
+    .chat-container {
+      flex-grow: 1;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .chat-header {
+      padding: 15px 20px;
+      background-color: #4a6fa5;
+      color: white;
+      display: flex;
+      align-items: center;
+    }
+    
+    .chat-header h2 {
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+    
+    .chat-header .status {
+      width: 10px;
+      height: 10px;
+      background-color: #4ade80;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    
+    .messages {
+      flex-grow: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .message {
+      max-width: 80%;
+      padding: 12px 16px;
+      border-radius: 18px;
+      position: relative;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .assistant {
+      align-self: flex-start;
+      background-color: #e9f0f9;
+      border-bottom-left-radius: 4px;
+    }
+    
+    .user {
+      align-self: flex-end;
+      background-color: #4a6fa5;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+    
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    
+    .option-btn {
+      background-color: #fff;
+      color: #4a6fa5;
+      border: 1px solid #4a6fa5;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .option-btn:hover {
+      background-color: #4a6fa5;
+      color: white;
+    }
+    
+    .exercise-card {
+      background-color: #fff;
+      border-left: 4px solid #4a6fa5;
+      border-radius: 6px;
+      padding: 15px;
+      margin-top: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .exercise-card h3 {
+      color: #4a6fa5;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+    
+    .exercise-card p {
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+    }
+    
+    .exercise-card .timer {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+    }
+    
+    .exercise-card .timer-display {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    
+    .exercise-card button {
+      background-color: #4a6fa5;
+      color: white;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    
+    .input-area {
+      padding: 15px;
+      border-top: 1px solid #eaeaea;
+      display: flex;
+      gap: 10px;
+    }
+    
+    .input-area input {
+      flex-grow: 1;
+      padding: 12px 16px;
+      border: 1px solid #ddd;
+      border-radius: 24px;
+      outline: none;
+      font-size: 1rem;
+    }
+    
+    .input-area input:focus {
+      border-color: #4a6fa5;
+    }
+    
+    .input-area button {
+      background-color: #4a6fa5;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 46px;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .input-area button:hover {
+      background-color: #3a5a80;
+    }
+    
+    .input-area button:disabled {
+      background-color: #b3c6db;
+      cursor: not-allowed;
+    }
+    
+    .loading-dots span {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #4a6fa5;
+      margin: 0 2px;
+      animation: bounce 1.4s infinite ease-in-out both;
+    }
+    
+    .loading-dots span:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+    
+    .loading-dots span:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+    
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+    
+    @media (max-width: 768px) {
+      .message {
+        max-width: 90%;
+      }
+      
+      .option-btn {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Mental Health Assistant</h1>
+      <p>A safe space to explore your feelings and find support</p>
+    </header>
+    
+    <div class="privacy-toggle">
+      <label>
+        <input type="checkbox" id="anonymous-mode">
+        Anonymous Mode
+      </label>
+    </div>
+    
+    <div class="chat-container">
+      <div class="chat-header">
+        <div class="status"></div>
+        <h2>Supportive Assistant</h2>
+      </div>
+      
+      <div class="messages" id="messages">
+        <!-- Messages will be added here -->
+      </div>
+      
+      <div class="input-area">
+        <input type="text" id="user-input" placeholder="Type your message here...">
+        <button id="send-button">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Mental Health Assistant Core Logic
+    const assistant = {
+      // Initial conversation flow
+      conversation: {
+        welcome: {
+          message: "Hello! I'm here to support you with your mental well-being. How are you feeling today?",
+          options: ["I'm doing well", "Feeling a bit stressed", "I feel anxious", "I'm sad", "I'm not sure"]
+        },
+        
+        // Response paths based on user's emotional state
+        "I'm doing well": {
+          message: "That's wonderful! It's great to hear you're doing well. Would you like to explore ways to maintain this positive state?",
+          options: ["Yes, I'd like that", "No, just checking in"]
+        },
+        
+        "Feeling a bit stressed": {
+          message: "I understand. Stress can be challenging. Can you tell me a bit more about what's causing your stress?",
+          followUp: "stressors"
+        },
+        
+        "I feel anxious": {
+          message: "I'm sorry to hear you're feeling anxious. Anxiety can be difficult to manage. Would you like to try a quick breathing exercise or talk about what's making you feel this way?",
+          options: ["Try breathing exercise", "Let's talk about it"]
+        },
+        
+        "I'm sad": {
+          message: "I'm here for you. Feeling sad is a natural emotion. Would you like to explore some gentle mood-lifting activities or talk about what's contributing to your sadness?",
+          options: ["Suggest activities", "Let's talk about it"]
+        },
+        
+        "I'm not sure": {
+          message: "That's okay. Sometimes it's hard to pinpoint exactly how we're feeling. Would you like to do a quick emotional check-in to help identify your current state?",
+          options: ["Yes, let's do that", "I'd rather just talk"]
+        },
+        
+        // Stressors identification
+        "stressors": {
+          message: "Stress can come from many sources. Which of these areas feels most challenging for you right now?",
+          options: ["Work/School", "Relationships", "Health concerns", "Financial issues", "Other"]
+        },
+        
+        // Techniques and exercises
+        "Try breathing exercise": {
+          message: "Let's try a simple breathing exercise to help reduce anxiety. I'll guide you through it.",
+          exercise: "breathingExercise"
+        },
+        
+        "Suggest activities": {
+          message: "Here are some gentle activities that might help lift your mood:",
+          activities: [
+            "Take a short walk outside (even 5-10 minutes can help)",
+            "Listen to uplifting music",
+            "Practice gratitude by noting 3 things you appreciate",
+            "Connect with a supportive friend or family member",
+            "Try a creative activity like drawing or journaling"
+          ],
+          followUp: "Would any of these feel manageable for you right now?"
+        },
+        
+        "Let's talk about it": {
+          message: "I'm here to listen. What's been on your mind lately that might be contributing to how you're feeling?",
+          isOpenEnded: true
+        }
+      },
+      
+      // Coping techniques
+      techniques: {
+        breathingExercise: {
+          title: "4-7-8 Breathing Exercise",
+          description: "This breathing pattern can help reduce anxiety and promote relaxation:",
+          steps: [
+            "Find a comfortable position",
+            "Breathe in quietly through your nose for 4 seconds",
+            "Hold your breath for 7 seconds",
+            "Exhale completely through your mouth for 8 seconds",
+            "Repeat 4 times"
+          ],
+          timerEnabled: true,
+          duration: 60
+        },
+        
+        thoughtReframing: {
+          title: "Thought Reframing Technique",
+          description: "When you notice a negative thought, try this simple CBT approach:",
+          steps: [
+            "Identify the negative thought",
+            "Consider the evidence for and against this thought",
+            "Create a more balanced perspective",
+            "Practice the new thought"
+          ],
+          example: "Instead of 'I always mess things up', try 'Sometimes I make mistakes, but I also have successes'"
+        },
+        
+        groundingExercise: {
+          title: "5-4-3-2-1 Grounding Technique",
+          description: "This exercise helps bring your attention to the present moment:",
+          steps: [
+            "Notice 5 things you can see",
+            "Notice 4 things you can touch/feel",
+            "Notice 3 things you can hear",
+            "Notice 2 things you can smell",
+            "Notice 1 thing you can taste"
+          ]
+        }
+      },
+      
+      // Response patterns for common situations
+      responsePatterns: {
+        // For when user shares a stressor
+        acknowledgeStressor: [
+          "That sounds challenging. You're not alone in feeling this way.",
+          "I hear you. Dealing with [issue] can be really difficult.",
+          "Thank you for sharing that with me. It takes courage to talk about these things."
+        ],
+        
+        // For suggesting next steps
+        suggestNextSteps: [
+          "Would you like to explore some strategies that might help with this specific situation?",
+          "Sometimes small actions can help us feel more in control. Would you like to discuss some possibilities?",
+          "What do you think might be a small, manageable step you could take in this situation?"
+        ],
+        
+        // For checking in
+        checkIn: [
+          "How are you feeling now after our conversation?",
+          "Has anything we've discussed been helpful for you?",
+          "Would you like to schedule a follow-up check-in about this?"
+        ]
+      },
+      
+      // Helper function to process user responses
+      processResponse: function(userInput) {
+        // Simplified for this example - would be more sophisticated in production
+        // This would handle both multiple choice selections and free text responses
+        
+        // Check if input matches any predefined options
+        if (this.conversation[userInput]) {
+          return this.conversation[userInput];
+        }
+        
+        // Handle stress-related keywords
+        if (userInput.toLowerCase().includes('stress') || 
+            userInput.toLowerCase().includes('overwhelm')) {
+          return {
+            message: this.responsePatterns.acknowledgeStressor[0] + " Stress can affect us in many ways. " +
+                    "Would you like to try a relaxation technique or talk more about what's causing your stress?",
+            options: ["Try a relaxation technique", "Let's talk more about it"]
+          };
+        }
+        
+        // Handle anxiety-related keywords
+        if (userInput.toLowerCase().includes('anxious') || 
+            userInput.toLowerCase().includes('worry') ||
+            userInput.toLowerCase().includes('panic')) {
+          return {
+            message: "Anxiety can be really uncomfortable. Would you like to try a quick grounding exercise that might help?",
+            options: ["Yes, let's try it", "Not right now"]
+          };
+        }
+        
+        // Default response for open-ended inputs
+        return {
+          message: "Thank you for sharing that. It sounds like you're going through a lot. " + 
+                  "Would you like to explore some coping strategies that might help?",
+          options: ["Yes, please", "Not right now"]
+        };
+      }
+    };
+
+    // DOM Elements
+    const messagesContainer = document.getElementById('messages');
+    const userInput = document.getElementById('user-input');
+    const sendButton = document.getElementById('send-button');
+    const anonymousToggle = document.getElementById('anonymous-mode');
+
+    // Track conversation state
+    let conversationState = {
+      isWaitingForResponse: false,
+      currentTopic: 'welcome',
+      userName: 'You'
+    };
+
+    // Initialize chat
+    function initChat() {
+      addMessage(assistant.conversation.welcome.message, 'assistant', assistant.conversation.welcome.options);
+    }
+
+    // Add a message to the chat
+    function addMessage(text, sender, options = null, exercise = null) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${sender}`;
+      
+      // For user messages in anonymous mode
+      if (sender === 'user' && anonymousToggle.checked) {
+        messageDiv.className += ' anonymous';
+      }
+      
+      messageDiv.innerHTML = `<p>${text}</p>`;
+      
+      // Add exercise card if provided
+      if (exercise) {
+        const technique = assistant.techniques[exercise];
+        if (technique) {
+          const exerciseCard = document.createElement('div');
+          exerciseCard.className = 'exercise-card';
+          
+          let exerciseContent = `
+            <h3>${technique.title}</h3>
+            <p>${technique.description}</p>
+            <ol>
+          `;
+          
+          technique.steps.forEach(step => {
+            exerciseContent += `<li>${step}</li>`;
+          });
+          
+          exerciseContent += `</ol>`;
+          
+          // Add timer if enabled
+          if (technique.timerEnabled) {
+            exerciseContent += `
+              <div class="timer">
+                <div class="timer-display">1:00</div>
+                <button class="timer-btn">Start</button>
+              </div>
+            `;
+          }
+          
+          exerciseCard.innerHTML = exerciseContent;
+          messageDiv.appendChild(exerciseCard);
+          
+          // Set up timer functionality
+          if (technique.timerEnabled) {
+            const timerDisplay = exerciseCard.querySelector('.timer-display');
+            const timerBtn = exerciseCard.querySelector('.timer-btn');
+            let countdown = technique.duration;
+            let timerInterval;
+            
+            timerBtn.addEventListener('click', function() {
+              if (timerBtn.textContent === 'Start') {
+                timerBtn.textContent = 'Pause';
+                timerInterval = setInterval(function() {
+                  countdown--;
+                  const minutes = Math.floor(countdown / 60);
+                  const seconds = countdown % 60;
+                  timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+                  
+                  if (countdown <= 0) {
+                    clearInterval(timerInterval);
+                    timerBtn.textContent = 'Restart';
+                    timerDisplay.textContent = 'Done!';
+                    
+                    // Add follow-up message
+                    setTimeout(() => {
+                      addMessage("How do you feel after completing this exercise?", 'assistant', ["Better", "The same", "Worse"]);
+                    }, 1000);
+                  }
+                }, 1000);
+              } else if (timerBtn.textContent === 'Pause') {
+                clearInterval(timerInterval);
+                timerBtn.textContent = 'Resume';
+              } else if (timerBtn.textContent === 'Resume') {
+                timerBtn.textContent = 'Pause';
+                timerInterval = setInterval(function() {
+                  countdown--;
+                  const minutes = Math.floor(countdown / 60);
+                  const seconds = countdown % 60;
+                  timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+                  
+                  if (countdown <= 0) {
+                    clearInterval(timerInterval);
+                    timerBtn.textContent = 'Restart';
+                    timerDisplay.textContent = 'Done!';
+                  }
+                }, 1000);
+              } else {
+                countdown = technique.duration;
+                timerDisplay.textContent = '1:00';
+                timerBtn.textContent = 'Start';
+              }
+            });
+          }
+        }
+      }
+      
+      // Add options if provided
+      if (options && options.length > 0) {
+        const optionsDiv = document.createElement('div');
+        optionsDiv.className = 'options';
+        
+        options.forEach(option => {
+          const button = document.createElement('button');
+          button.className = 'option-btn';
+          button.textContent = option;
+          
+          button.addEventListener('click', function() {
+            // Add user's selection as a message
+            addMessage(option, 'user');
+            
+            // Process the response
+            handleUserInput(option);
+            
+            // Remove options after selection
+            optionsDiv.remove();
+          });
+          
+          optionsDiv.appendChild(button);
+        });
+        
+        messageDiv.appendChild(optionsDiv);
+      }
+      
+      messagesContainer.appendChild(messageDiv);
+      
+      // Scroll to the newest message
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Show typing indicator
+    function showTypingIndicator() {
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'message assistant typing';
+      typingDiv.id = 'typing-indicator';
+      
+      typingDiv.innerHTML = `
+        <div class="loading-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      `;
+      
+      messagesContainer.appendChild(typingDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Remove typing indicator
+    function removeTypingIndicator() {
+      const typingIndicator = document.getElementById('typing-indicator');
+      if (typingIndicator) {
+        typingIndicator.remove();
+      }
+    }
+
+    // Handle user input (from text input or option buttons)
+    function handleUserInput(input) {
+      conversationState.isWaitingForResponse = true;
+      
+      // Show typing indicator
+      showTypingIndicator();
+      
+      // Simulate assistant thinking/typing (would connect to backend in real implementation)
+      setTimeout(() => {
+        removeTypingIndicator();
+        
+        // Process the response
+        const response = assistant.processResponse(input);
+        
+        if (response) {
+          // Add the assistant's response
+          addMessage(response.message, 'assistant', response.options);
+          
+          // If there's an exercise to perform
+          if (response.exercise) {
+            addMessage("Let's try this exercise:", 'assistant', null, response.exercise);
+          }
+          
+          // If there are activities to suggest
+          if (response.activities) {
+            let activitiesMessage = response.activities.map((activity, index) => 
+              `${index + 1}. ${activity}`
+            ).join('<br>');
+            
+            if (response.followUp) {
+              activitiesMessage += `<br><br>${response.followUp}`;
+            }
+            
+            addMessage(activitiesMessage, 'assistant', ["I'll try one of these", "None of these appeal to me"]);
+          }
+          
+          // Update conversation state
+          if (response.followUp) {
+            conversationState.currentTopic = response.followUp;
+          } else {
+            conversationState.currentTopic = input;
+          }
+        }
+        
+        conversationState.isWaitingForResponse = false;
+      }, 1500);
+    }
+
+    // Event listeners
+    sendButton.addEventListener('click', function() {
+      if (userInput.value.trim() && !conversationState.isWaitingForResponse) {
+        const message = userInput.value.trim();
+        addMessage(message, 'user');
+        handleUserInput(message);
+        userInput.value = '';
+      }
+    });
+
+    userInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && userInput.value.trim() && !conversationState.isWaitingForResponse) {
+        const message = userInput.value.trim();
+        addMessage(message, 'user');
+        handleUserInput(message);
+        userInput.value = '';
+      }
+    });
+
+    // Handle anonymous mode
+    anonymousToggle.addEventListener('change', function() {
+      if (this.checked) {
+        document.querySelectorAll('.message.user').forEach(el => {
+          el.classList.add('anonymous');
+        });
+      } else {
+        document.querySelectorAll('.message.user').forEach(el => {
+          el.classList.remove('anonymous');
+        });
+      }
+    });
+
+    // Initialize the chat
+    document.addEventListener('DOMContentLoaded', initChat);
+  </script>
+</body>
+</html>
